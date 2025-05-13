@@ -1,0 +1,29 @@
+%% === PARTE 1: LECTURA Y VALIDACIÓN DE LA IMAGEN ===
+img = imread('bandera80.png');  % Asegúrate de tener una imagen 41x80 RGB
+[rows, cols, ch] = size(img);
+
+if rows ~= 41 || cols ~= 80 || ch ~= 3
+    error('La imagen debe ser de 41x80 y tener 3 canales (RGB).');
+end
+
+%% === PARTE 2: CONVERSIÓN A BITS ===
+img_vector = img(:);  % [41*80*3 x 1] = [9840x1]
+bits = de2bi(img_vector, 8, 'left-msb')';  % [8 x 9840]
+bit_stream = bits(:);  % [78720 x 1] vector de bits
+
+%% === PARTE 3: CONVERSIÓN A CARACTERES '0' y '1' ===
+char_stream = char(bit_stream + '0');  % convierte bits a '0' y '1'
+
+%% === PARTE 4: AGREGAR PREFIJO Y SUFIJO ===
+prefijo = repmat('a', 1, 30);
+sufijo  = repmat('b', 1, 30);
+cadena_final = [prefijo, char_stream', sufijo];  % [1x78780 char]
+
+%% === PARTE 5: GUARDAR EN ARCHIVO DE TEXTO ===
+filename_out = 'imagen_color_bits_formato_101_lineas.txt';
+fid = fopen(filename_out, 'w');
+fprintf(fid, '%s', cadena_final);
+fclose(fid);
+
+fprintf('✅ Cadena binaria guardada correctamente en "%s" (longitud: %d)\n', ...
+        filename_out, length(cadena_final));
